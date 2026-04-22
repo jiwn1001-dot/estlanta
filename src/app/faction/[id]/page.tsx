@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+
+export const dynamic = 'force-dynamic';
 import fs from 'fs';
 import path from 'path';
 
