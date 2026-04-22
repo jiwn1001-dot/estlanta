@@ -16,7 +16,7 @@ export default function AdminAuth({ children }: { children: React.ReactNode }) {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === "9828") {
+    if (password === "106891") {
       sessionStorage.setItem("adminAuth", "true");
       setIsAuthenticated(true);
       setError(false);
