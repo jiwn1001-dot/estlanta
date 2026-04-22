@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 
 export const dynamic = 'force-dynamic';
 import fs from 'fs';
@@ -20,6 +21,7 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     fs.writeFileSync(dataFilePath, JSON.stringify(body, null, 2), 'utf8');
+    revalidatePath('/', 'layout');
     return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json({ error: 'Failed to save site settings' }, { status: 500 });
