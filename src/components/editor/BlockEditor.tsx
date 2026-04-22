@@ -54,14 +54,19 @@ export default function BlockEditor() {
         })
       ]);
       
-      if (!factionsRes.ok || !siteRes.ok) {
-        throw new Error("서버 저장 실패");
+      if (!factionsRes.ok) {
+        const err = await factionsRes.json();
+        throw new Error("Factions API: " + (err.error || factionsRes.statusText));
+      }
+      if (!siteRes.ok) {
+        const err = await siteRes.json();
+        throw new Error("Site API: " + (err.error || siteRes.statusText));
       }
       
       router.refresh();
       alert('저장되었습니다. 전체 페이지에 즉시 반영됩니다.');
-    } catch (e) {
-      alert('저장 실패: ' + e);
+    } catch (e: any) {
+      alert('저장 실패: ' + e.message);
     }
     setIsSaving(false);
   };

@@ -23,7 +23,8 @@ export async function POST(request: Request) {
     fs.writeFileSync(dataFilePath, JSON.stringify(body, null, 2), 'utf8');
     revalidatePath('/', 'layout');
     return NextResponse.json({ success: true });
-  } catch (error) {
-    return NextResponse.json({ error: 'Failed to save factions' }, { status: 500 });
+  } catch (error: any) {
+    console.error("API POST Error:", error);
+    return NextResponse.json({ error: error.message || 'Failed to save factions' }, { status: 500 });
   }
 }
