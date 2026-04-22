@@ -377,7 +377,7 @@ export default function BlockEditor() {
               {/* NPCs Section */}
               <section className="bg-white/5 p-6 rounded-lg border border-gray-800">
                 <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-xl font-bold text-white">03. NPC Roster (주요 인물)</h2>
+                  <h2 className="text-xl font-bold text-white">03. 등장인물 (Characters)</h2>
                   <button onClick={addNpc} className="px-3 py-1 bg-gray-800 hover:bg-gray-700 rounded text-sm text-white transition-colors">+ NPC 추가</button>
                 </div>
                 

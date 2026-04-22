@@ -46,7 +46,7 @@ export default async function FactionPage({ params }: { params: Promise<{ id: st
                 <a href="#chronology" className="hover:text-white transition-colors">02. Chronology</a>
               </li>
               <li>
-                <a href="#roster" className="hover:text-white transition-colors">03. NPC Roster</a>
+                <a href="#roster" className="hover:text-white transition-colors">03. 등장인물</a>
               </li>
             </ul>
           </nav>
@@ -89,7 +89,7 @@ export default async function FactionPage({ params }: { params: Promise<{ id: st
           </section>
 
           <section id="roster" className="scroll-mt-24">
-            <h3 className={`text-xs uppercase tracking-[0.3em] text-gray-500 mb-6 font-[family-name:var(--font-share-tech-mono)]`}>03 // NPC Roster</h3>
+            <h3 className={`text-xs uppercase tracking-[0.3em] text-gray-500 mb-6 font-[family-name:var(--font-share-tech-mono)]`}>03 // 등장인물</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               {data.npcs.map((npc: any, idx: number) => (
                 <div key={idx} className={`p-6 border-t border-l border-gray-800 bg-gradient-to-br from-white/5 to-transparent hover:border-l-${data.theme} transition-all duration-300 break-words flex flex-col`}>
