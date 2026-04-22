@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
+import { kv } from '@vercel/kv';
 
 export const dynamic = 'force-dynamic';
 import fs from 'fs';
@@ -9,9 +10,12 @@ const dataFilePath = path.join(process.cwd(), 'src', 'data', 'factions.json');
 
 export async function GET() {
   try {
-    const fileData = fs.readFileSync(dataFilePath, 'utf8');
-    const factions = JSON.parse(fileData);
-    return NextResponse.json(factions);
+    let factions = await kv.get('factions');
+    if (!factions) {
+      const fileData = fs.readFileSync(dataFilePath, 'utf8');
+      factions = JSON.parse(fileData);
+    }
+    return NextResponse.json(factions || {});
   } catch (error) {
     return NextResponse.json({ error: 'Failed to load factions' }, { status: 500 });
   }
@@ -20,7 +24,7 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    fs.writeFileSync(dataFilePath, JSON.stringify(body, null, 2), 'utf8');
+    await kv.set('factions', body);
     revalidatePath('/', 'layout');
     return NextResponse.json({ success: true });
   } catch (error: any) {

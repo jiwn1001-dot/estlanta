@@ -6,13 +6,18 @@ import fs from 'fs';
 import path from 'path';
 import { unstable_noStore as noStore } from 'next/cache';
 
-// 서버에서 직접 JSON 파일 읽기
+import { kv } from '@vercel/kv';
+
+// 서버에서 직접 JSON 파일 또는 KV 읽기
 async function getFactionData(id: string) {
   noStore();
   try {
-    const dataFilePath = path.join(process.cwd(), 'src', 'data', 'factions.json');
-    const fileData = fs.readFileSync(dataFilePath, 'utf8');
-    const factions = JSON.parse(fileData);
+    let factions = await kv.get('factions') as any;
+    if (!factions) {
+      const dataFilePath = path.join(process.cwd(), 'src', 'data', 'factions.json');
+      const fileData = fs.readFileSync(dataFilePath, 'utf8');
+      factions = JSON.parse(fileData);
+    }
     return factions[id];
   } catch (error) {
     return null;

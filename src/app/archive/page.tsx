@@ -6,11 +6,17 @@ import fs from 'fs';
 import path from 'path';
 import { unstable_noStore as noStore } from 'next/cache';
 
+import { kv } from '@vercel/kv';
+
 async function getFactions() {
   noStore();
   try {
-    const factionsPath = path.join(process.cwd(), 'src', 'data', 'factions.json');
-    return JSON.parse(fs.readFileSync(factionsPath, 'utf8'));
+    let factions = await kv.get('factions');
+    if (!factions) {
+      const factionsPath = path.join(process.cwd(), 'src', 'data', 'factions.json');
+      factions = JSON.parse(fs.readFileSync(factionsPath, 'utf8'));
+    }
+    return factions as any;
   } catch (e) {
     return {};
   }

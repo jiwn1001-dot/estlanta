@@ -6,11 +6,17 @@ import fs from 'fs';
 import path from 'path';
 import { unstable_noStore as noStore } from 'next/cache';
 
+import { kv } from '@vercel/kv';
+
 async function getSiteData() {
   noStore();
   try {
-    const sitePath = path.join(process.cwd(), 'src', 'data', 'site.json');
-    return JSON.parse(fs.readFileSync(sitePath, 'utf8'));
+    let site = await kv.get('site');
+    if (!site) {
+      const sitePath = path.join(process.cwd(), 'src', 'data', 'site.json');
+      site = JSON.parse(fs.readFileSync(sitePath, 'utf8'));
+    }
+    return site as any;
   } catch (e) {
     return { title: "Estlanta", subtitle: "강철과 살점, 매연과 네온이 교차하는 세계.\n당신의 존재가 역사를 다시 씁니다." };
   }
@@ -19,8 +25,12 @@ async function getSiteData() {
 async function getFactions() {
   noStore();
   try {
-    const factionsPath = path.join(process.cwd(), 'src', 'data', 'factions.json');
-    return JSON.parse(fs.readFileSync(factionsPath, 'utf8'));
+    let factions = await kv.get('factions');
+    if (!factions) {
+      const factionsPath = path.join(process.cwd(), 'src', 'data', 'factions.json');
+      factions = JSON.parse(fs.readFileSync(factionsPath, 'utf8'));
+    }
+    return factions as any;
   } catch (e) {
     return {};
   }
