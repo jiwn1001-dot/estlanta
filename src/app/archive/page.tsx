@@ -4,8 +4,10 @@ import FactionCard from "@/components/ui/FactionCard";
 export const dynamic = 'force-dynamic';
 import fs from 'fs';
 import path from 'path';
+import { unstable_noStore as noStore } from 'next/cache';
 
 async function getFactions() {
+  noStore();
   try {
     const factionsPath = path.join(process.cwd(), 'src', 'data', 'factions.json');
     return JSON.parse(fs.readFileSync(factionsPath, 'utf8'));

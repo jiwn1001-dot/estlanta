@@ -10,6 +10,8 @@ export default function BlockEditor() {
   
   const [activeTab, setActiveTab] = useState<'main' | 'faction'>('faction');
   const [selectedId, setSelectedId] = useState<string>("");
+  const [newFactionId, setNewFactionId] = useState<string>("");
+  const [isAddingFaction, setIsAddingFaction] = useState(false);
   
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -39,7 +41,7 @@ export default function BlockEditor() {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      await Promise.all([
+      const [factionsRes, siteRes] = await Promise.all([
         fetch('/api/factions', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -51,18 +53,26 @@ export default function BlockEditor() {
           body: JSON.stringify(siteData)
         })
       ]);
+      
+      if (!factionsRes.ok || !siteRes.ok) {
+        throw new Error("서버 저장 실패");
+      }
+      
       router.refresh();
       alert('저장되었습니다. 전체 페이지에 즉시 반영됩니다.');
     } catch (e) {
-      alert('저장 실패');
+      alert('저장 실패: ' + e);
     }
     setIsSaving(false);
   };
 
   // --- Faction Management ---
-  const addNewFaction = () => {
-    const id = prompt("새 세력의 ID를 입력하세요 (영문 소문자, 하이픈만 가능. 예: resistance)");
-    if (!id) return;
+  const handleAddNewFaction = () => {
+    const id = newFactionId.trim().toLowerCase();
+    if (!id) {
+      alert("ID를 입력하세요.");
+      return;
+    }
     if (factions[id]) {
       alert("이미 존재하는 ID입니다.");
       return;
@@ -84,6 +94,8 @@ export default function BlockEditor() {
     };
     setFactions(updated);
     setSelectedId(id);
+    setNewFactionId("");
+    setIsAddingFaction(false);
   };
 
   const deleteFaction = () => {
@@ -240,12 +252,26 @@ export default function BlockEditor() {
               </select>
             </div>
             <div className="flex gap-2">
-              <button onClick={addNewFaction} className="px-3 py-1 bg-blue-900/50 hover:bg-blue-900 border border-blue-700 rounded text-xs text-white transition-colors">+ 세력 추가</button>
+              <button onClick={() => setIsAddingFaction(true)} className="px-3 py-1 bg-blue-900/50 hover:bg-blue-900 border border-blue-700 rounded text-xs text-white transition-colors">+ 세력 추가</button>
               {selectedId && (
                 <button onClick={deleteFaction} className="px-3 py-1 bg-red-900/20 hover:bg-red-900/50 border border-red-900/50 rounded text-xs text-red-500 transition-colors">삭제</button>
               )}
             </div>
           </div>
+
+          {isAddingFaction && (
+            <div className="bg-blue-900/20 border border-blue-800 p-4 rounded-lg flex items-center gap-4">
+              <input 
+                type="text" 
+                value={newFactionId}
+                onChange={(e) => setNewFactionId(e.target.value)}
+                placeholder="새 세력 ID (영문소문자. 예: resistance)"
+                className="bg-[#0a0a0a] border border-blue-700 p-2 rounded text-sm text-white outline-none focus:border-blue-500 flex-1"
+              />
+              <button onClick={handleAddNewFaction} className="px-4 py-2 bg-blue-600 text-white text-sm rounded font-bold hover:bg-blue-500">확인</button>
+              <button onClick={() => setIsAddingFaction(false)} className="px-4 py-2 bg-gray-700 text-white text-sm rounded font-bold hover:bg-gray-600">취소</button>
+            </div>
+          )}
 
           {!selectedId ? (
             <div className="text-center py-20 text-gray-600">선택된 세력이 없습니다. 세력을 추가하거나 선택해 주세요.</div>

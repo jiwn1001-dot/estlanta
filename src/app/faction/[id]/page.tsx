@@ -4,9 +4,11 @@ import { notFound } from "next/navigation";
 export const dynamic = 'force-dynamic';
 import fs from 'fs';
 import path from 'path';
+import { unstable_noStore as noStore } from 'next/cache';
 
 // 서버에서 직접 JSON 파일 읽기
 async function getFactionData(id: string) {
+  noStore();
   try {
     const dataFilePath = path.join(process.cwd(), 'src', 'data', 'factions.json');
     const fileData = fs.readFileSync(dataFilePath, 'utf8');

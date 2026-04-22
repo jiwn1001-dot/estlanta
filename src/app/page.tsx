@@ -4,8 +4,10 @@ import Link from "next/link";
 export const dynamic = 'force-dynamic';
 import fs from 'fs';
 import path from 'path';
+import { unstable_noStore as noStore } from 'next/cache';
 
 async function getSiteData() {
+  noStore();
   try {
     const sitePath = path.join(process.cwd(), 'src', 'data', 'site.json');
     return JSON.parse(fs.readFileSync(sitePath, 'utf8'));
@@ -15,6 +17,7 @@ async function getSiteData() {
 }
 
 async function getFactions() {
+  noStore();
   try {
     const factionsPath = path.join(process.cwd(), 'src', 'data', 'factions.json');
     return JSON.parse(fs.readFileSync(factionsPath, 'utf8'));
