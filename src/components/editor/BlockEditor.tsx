@@ -1,8 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function BlockEditor() {
+  const router = useRouter();
   const [factions, setFactions] = useState<any>(null);
   const [siteData, setSiteData] = useState<any>(null);
   
@@ -14,8 +16,8 @@ export default function BlockEditor() {
 
   useEffect(() => {
     Promise.all([
-      fetch('/api/factions').then(res => res.json()),
-      fetch('/api/site').then(res => res.json())
+      fetch('/api/factions', { cache: 'no-store' }).then(res => res.json()),
+      fetch('/api/site', { cache: 'no-store' }).then(res => res.json())
     ]).then(([factionsData, siteDataRes]) => {
       setFactions(factionsData);
       setSiteData(siteDataRes);
@@ -49,6 +51,7 @@ export default function BlockEditor() {
           body: JSON.stringify(siteData)
         })
       ]);
+      router.refresh();
       alert('저장되었습니다. 전체 페이지에 즉시 반영됩니다.');
     } catch (e) {
       alert('저장 실패');
