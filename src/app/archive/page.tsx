@@ -10,16 +10,21 @@ import { kv } from '@vercel/kv';
 
 async function getFactions() {
   noStore();
+  let factions;
   try {
-    let factions = await kv.get('factions');
-    if (!factions) {
+    factions = await kv.get('factions');
+  } catch (e) {
+    console.warn('KV not configured, using fallback');
+  }
+  if (!factions) {
+    try {
       const factionsPath = path.join(process.cwd(), 'src', 'data', 'factions.json');
       factions = JSON.parse(fs.readFileSync(factionsPath, 'utf8'));
+    } catch (e) {
+      return {};
     }
-    return factions as any;
-  } catch (e) {
-    return {};
   }
+  return factions as any;
 }
 
 export default async function ArchivePage() {

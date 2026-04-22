@@ -9,16 +9,22 @@ import path from 'path';
 const dataFilePath = path.join(process.cwd(), 'src', 'data', 'factions.json');
 
 export async function GET() {
+  let factions;
   try {
-    let factions = await kv.get('factions');
-    if (!factions) {
+    factions = await kv.get('factions');
+  } catch (e) {
+    console.warn('KV not configured, using fallback');
+  }
+
+  if (!factions) {
+    try {
       const fileData = fs.readFileSync(dataFilePath, 'utf8');
       factions = JSON.parse(fileData);
+    } catch (e) {
+      return NextResponse.json({ error: 'Failed to load factions' }, { status: 500 });
     }
-    return NextResponse.json(factions || {});
-  } catch (error) {
-    return NextResponse.json({ error: 'Failed to load factions' }, { status: 500 });
   }
+  return NextResponse.json(factions || {});
 }
 
 export async function POST(request: Request) {

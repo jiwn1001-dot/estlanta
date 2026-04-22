@@ -11,17 +11,22 @@ import { kv } from '@vercel/kv';
 // 서버에서 직접 JSON 파일 또는 KV 읽기
 async function getFactionData(id: string) {
   noStore();
+  let factions;
   try {
-    let factions = await kv.get('factions') as any;
-    if (!factions) {
+    factions = await kv.get('factions') as any;
+  } catch (e) {
+    console.warn('KV not configured, using fallback');
+  }
+  if (!factions) {
+    try {
       const dataFilePath = path.join(process.cwd(), 'src', 'data', 'factions.json');
       const fileData = fs.readFileSync(dataFilePath, 'utf8');
       factions = JSON.parse(fileData);
+    } catch (e) {
+      return null;
     }
-    return factions[id];
-  } catch (error) {
-    return null;
   }
+  return factions ? factions[id] : null;
 }
 
 export default async function FactionPage({ params }: { params: Promise<{ id: string }> }) {

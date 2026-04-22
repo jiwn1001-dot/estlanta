@@ -10,30 +10,40 @@ import { kv } from '@vercel/kv';
 
 async function getSiteData() {
   noStore();
+  let site;
   try {
-    let site = await kv.get('site');
-    if (!site) {
+    site = await kv.get('site');
+  } catch (e) {
+    console.warn('KV not configured, using fallback');
+  }
+  if (!site) {
+    try {
       const sitePath = path.join(process.cwd(), 'src', 'data', 'site.json');
       site = JSON.parse(fs.readFileSync(sitePath, 'utf8'));
+    } catch (e) {
+      return { title: "Estlanta", subtitle: "강철과 살점, 매연과 네온이 교차하는 세계.\n당신의 존재가 역사를 다시 씁니다." };
     }
-    return site as any;
-  } catch (e) {
-    return { title: "Estlanta", subtitle: "강철과 살점, 매연과 네온이 교차하는 세계.\n당신의 존재가 역사를 다시 씁니다." };
   }
+  return site as any;
 }
 
 async function getFactions() {
   noStore();
+  let factions;
   try {
-    let factions = await kv.get('factions');
-    if (!factions) {
+    factions = await kv.get('factions');
+  } catch (e) {
+    console.warn('KV not configured, using fallback');
+  }
+  if (!factions) {
+    try {
       const factionsPath = path.join(process.cwd(), 'src', 'data', 'factions.json');
       factions = JSON.parse(fs.readFileSync(factionsPath, 'utf8'));
+    } catch (e) {
+      return {};
     }
-    return factions as any;
-  } catch (e) {
-    return {};
   }
+  return factions as any;
 }
 
 export default async function Home() {

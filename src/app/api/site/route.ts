@@ -9,16 +9,22 @@ import path from 'path';
 const dataFilePath = path.join(process.cwd(), 'src', 'data', 'site.json');
 
 export async function GET() {
+  let siteSettings;
   try {
-    let siteSettings = await kv.get('site');
-    if (!siteSettings) {
+    siteSettings = await kv.get('site');
+  } catch (e) {
+    console.warn('KV not configured, using fallback');
+  }
+
+  if (!siteSettings) {
+    try {
       const fileData = fs.readFileSync(dataFilePath, 'utf8');
       siteSettings = JSON.parse(fileData);
+    } catch (e) {
+      return NextResponse.json({ error: 'Failed to load site settings' }, { status: 500 });
     }
-    return NextResponse.json(siteSettings || {});
-  } catch (error) {
-    return NextResponse.json({ error: 'Failed to load site settings' }, { status: 500 });
   }
+  return NextResponse.json(siteSettings || {});
 }
 
 export async function POST(request: Request) {
